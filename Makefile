@@ -7,8 +7,6 @@ SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = source
 BUILDDIR      = build
-HTMLDIR       = "build/html/"
-COPYDIR = "../pages/"
 
 # Put it first so that "make" without argument is like "make help".
 help:
