@@ -70,7 +70,8 @@
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">Serial</a><ul>
-<li><a class="reference internal" href="#docstrings">Docstrings</a></li>
+<li><a class="reference internal" href="#serial-docstring"><code class="docutils literal notranslate"><span class="pre">Serial</span></code> Docstring</a></li>
+<li><a class="reference internal" href="#tree-flatten"><code class="docutils literal notranslate"><span class="pre">tree_flatten</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -119,14 +120,18 @@
   <div class="section" id="serial">
 <h1>Serial<a class="headerlink" href="#serial" title="Permalink to this headline">¶</a></h1>
 <p>The Serial function is part of the <code class="docutils literal notranslate"><span class="pre">inputs</span></code> module. You use it to combine other data functions. It passes the outputs from each layer to the next one in the series. It’s a <a class="reference external" href="https://en.wikipedia.org/wiki/Closure_(computer_programming)">closure</a> that runs all the functions passed to it through <code class="docutils literal notranslate"><span class="pre">trax.fastmath.numpy.tree_flatten</span></code>.</p>
-<div class="section" id="docstrings">
-<h2>Docstrings<a class="headerlink" href="#docstrings" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="serial-docstring">
+<h2><code class="docutils literal notranslate"><span class="pre">Serial</span></code> Docstring<a class="headerlink" href="#serial-docstring" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="trax.data.Serial">
 <code class="sig-prename descclassname"><span class="pre">trax.data.</span></code><code class="sig-name descname"><span class="pre">Serial</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#Serial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.Serial" title="Permalink to this definition">¶</a></dt>
 <dd><p>Combines generator functions into one that runs them serially.</p>
 </dd></dl>
 
+</div>
+<div class="section" id="tree-flatten">
+<h2><code class="docutils literal notranslate"><span class="pre">tree_flatten</span></code><a class="headerlink" href="#tree-flatten" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">tree_flatten</span></code> is a recursive function that converts a tree into a flat list.</p>
 <dl class="py function">
 <dt id="trax.fastmath.numpy.tree_flatten">
 <code class="sig-prename descclassname"><span class="pre">trax.fastmath.numpy.</span></code><code class="sig-name descname"><span class="pre">tree_flatten</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/fastmath/numpy.html#tree_flatten"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.fastmath.numpy.tree_flatten" title="Permalink to this definition">¶</a></dt>
