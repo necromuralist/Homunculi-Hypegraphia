@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inputs Module &#8212; Homunculi Hypergraphia 0.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/monkey-style.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="Serial" href="serial.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          Homunculi Hypergraphia</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Trax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Inputs Module</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="serial.html" title="Previous Chapter: Serial"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Serial</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../../_sources/trax/data/inputs.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="module-trax.data.inputs">
+<span id="inputs-module"></span><h1>Inputs Module<a class="headerlink" href="#module-trax.data.inputs" title="Permalink to this headline">¶</a></h1>
+<p>Trax input pipeline.</p>
+<p>In Trax we encourage to use combinators to construct input pipelines in a way
+that resembles layer combinators. Here is an example of an input pipeline for
+training sentiment analysis tasks on the IMDB dataset:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">inputs</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span>
+  <span class="n">data</span><span class="o">.</span><span class="n">TFDS</span><span class="p">(</span><span class="s1">&#39;imdb_reviews&#39;</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">),</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+  <span class="n">data</span><span class="o">.</span><span class="n">Tokenize</span><span class="p">(</span><span class="n">vocab_file</span><span class="o">=</span><span class="s1">&#39;en_8k.subword&#39;</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+  <span class="n">data</span><span class="o">.</span><span class="n">Shuffle</span><span class="p">(),</span>
+  <span class="n">data</span><span class="o">.</span><span class="n">FilterByLength</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">length_keys</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+  <span class="n">data</span><span class="o">.</span><span class="n">BucketByLength</span><span class="p">(</span><span class="n">boundaries</span><span class="o">=</span><span class="p">[</span>  <span class="mi">32</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">2048</span><span class="p">],</span>
+                      <span class="n">batch_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">128</span><span class="p">,</span>  <span class="mi">32</span><span class="p">,</span>   <span class="mi">8</span><span class="p">,</span>    <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                      <span class="n">length_keys</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+  <span class="n">data</span><span class="o">.</span><span class="n">AddLossWeights</span><span class="p">()</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Each of these combinators creates a python generator of tuples of data examples.
+For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">TFDS</span><span class="p">(</span><span class="s1">&#39;imdb_reviews&#39;</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">),</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+</pre></div>
+</div>
+<p>creates a generator of examples from the TFDS imdb_reviews dataset, see here:
+<a class="reference external" href="https://www.tensorflow.org/datasets/catalog/imdb_reviews">https://www.tensorflow.org/datasets/catalog/imdb_reviews</a></p>
+<p>As you can see on the website above, this dataset has ‘text’ and ‘label’ fields
+and we create tuples containing the text and the label from the training split
+by specifying keys=(‘text’, ‘label’), train=True.</p>
+<p>The other combinators, like Tokenize and Shuffle, take a generator and output
+another generator, in this way converting tuples into other tuples or mixing
+the training stream. For example, Tokenize(…, keys=[0]) will tokenize the
+first element of the tuple - and in this way convert it from text to a tensor of
+integers. Shuffle will not change the examples, but will randomize their order.</p>
+<p>Note that all elements in the data pipeline are just functions on generators,
+so you can use python’s <cite>map</cite> and <cite>filter</cite> and other native functions too.
+For example, you can create an input pipeline for a language model reading
+lines from <cite>my_file.txt</cite> as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">inputs</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span>
+  <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;my_file.txt&#39;</span><span class="p">),</span>
+  <span class="k">lambda</span> <span class="n">g</span><span class="p">:</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">line</span><span class="p">:</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">g</span><span class="p">),</span>
+  <span class="n">data</span><span class="o">.</span><span class="n">Tokenize</span><span class="p">(</span><span class="n">vocab_file</span><span class="o">=</span><span class="s1">&#39;en_8k.subword&#39;</span><span class="p">),</span>
+  <span class="k">lambda</span> <span class="n">g</span><span class="p">:</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">513</span><span class="p">,</span> <span class="n">g</span><span class="p">),</span>  <span class="c1"># At most 512 tokens.</span>
+  <span class="n">data</span><span class="o">.</span><span class="n">Shuffle</span><span class="p">(),</span>
+  <span class="k">lambda</span> <span class="n">g</span><span class="p">:</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)),</span>  <span class="c1"># Language models have inputs = targets.</span>
+  <span class="n">data</span><span class="o">.</span><span class="n">BucketByLength</span><span class="p">(</span><span class="n">boundaries</span><span class="o">=</span><span class="p">[</span>  <span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">512</span><span class="p">],</span>
+                      <span class="n">batch_sizes</span><span class="o">=</span><span class="p">[</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span>  <span class="mi">8</span><span class="p">,</span>    <span class="mi">4</span><span class="p">,</span>   <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+  <span class="n">data</span><span class="o">.</span><span class="n">AddLossWeights</span><span class="p">(</span><span class="n">id_to_mask</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt id="trax.data.inputs.AddLossWeights">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">AddLossWeights</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_to_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#AddLossWeights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.AddLossWeights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a function to add loss weights; see <cite>add_loss_weights</cite>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.AppendValue">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">AppendValue</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#AppendValue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.AppendValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Appends values provided in ‘val` to inputs.</p>
+<p>val are keyed by example keys, its values contain appended tensors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>val</strong> – dict of int to tensors. Specific keys get the tensors specified in
+values appended.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Funtion to append tensors to examples.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.Batch">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">Batch</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#Batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.Batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a batching function with given batch size.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.BucketByLength">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">BucketByLength</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">boundaries</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_sizes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_pad_on_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#BucketByLength"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.BucketByLength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a function for bucketing inputs, see <cite>bucket_by_length</cite>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.CastTo">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">CastTo</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.int32'&gt;</span></em>, <em class="sig-param"><span class="pre">indices=(0</span></em>, <em class="sig-param"><span class="pre">1)</span></em>, <em class="sig-param"><span class="pre">debug=False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#CastTo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.CastTo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Casts the given indices to the given dtype.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.ConcatenateToLMInput">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">ConcatenateToLMInput</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pad_to_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#ConcatenateToLMInput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.ConcatenateToLMInput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares the input needed for training of Language Models.</p>
+<p>Each example needs to contain two elements (input and target).
+Input is concatenated to target and, if pad_to_length is given, padded to
+length provided.
+The loss_weights indicates only the target, without input nor padding.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pad_to_length</strong> – int, total length of padding of input and target arrays.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Function to return input for a LM.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.CountAndSkip">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">CountAndSkip</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#CountAndSkip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.CountAndSkip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a function that counts and skips examples (see above).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.FilterByLength">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">FilterByLength</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#FilterByLength"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.FilterByLength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a function that filters out examples by length.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>max_length</strong> – int. If not None, indicates maximum length.</p></li>
+<li><p><strong>min_length</strong> – int. If not None, indicates minimum length.</p></li>
+<li><p><strong>length_keys</strong> – (list) which example keys to take into account.</p></li>
+<li><p><strong>length_axis</strong> – which shape axis to take into account.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a function that filters out examples by length.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.FilterEmptyExamples">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">FilterEmptyExamples</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#FilterEmptyExamples"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.FilterEmptyExamples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filters empty examples.</p>
+<p>Filters any example that has an array of size (0,) (if axes=None).
+Alternatively, checks only axes provided in <a href="#id1"><span class="problematic" id="id2">`</span></a>axes’ list. Contrary to
+FilterByLength used with several elements with length_axis, here the example
+would be filtered if ANY of the dimensions listed in <a href="#id3"><span class="problematic" id="id4">`</span></a>axes’ contains an empty
+array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axes</strong> – list of indices to check, if None, all of them.</p></li>
+<li><p><strong>debug</strong> – If true, emits a log everytime we filter out an empty example.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Function filtering empty examples.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="trax.data.inputs.Inputs">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">Inputs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_stream</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_stream</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_eval_stream</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#Inputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.Inputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inputs bundle.</p>
+<p>Inputs bundle holds input streams and shapes for a training run.
+It contains stream-creating functions that return python generators
+of (input_batch, target_batch) tuples.</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>train_stream: training data that will be used for training</dt><dd><p>may include all the augmentation or selection the training wants
+the shape of examples is [batch_fn.batch_size, …]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>train_eval_stream: training data used for evaluation</dt><dd><p>examples from training data but usually without augmentation
+the shape of examples is [batch_fn.eval_batch_size, …]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>eval_stream: evaluation data stream</dt><dd><p>examples from evaluation data, usually without augmentation
+the shape of examples is [batch_fn.eval_batch_size, …]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>input_shape: the shape of inputs</dt><dd><p>the […] above, without batch size</p>
+</dd>
+</dl>
+</li>
+<li><p>input_dtype: the data type of inputs</p></li>
+<li><dl class="simple">
+<dt>target_shape: the shape of targets</dt><dd><p>the […] above, without batch size</p>
+</dd>
+</dl>
+</li>
+<li><p>target_dtype: the data type of targets</p></li>
+</ul>
+<dl class="py method">
+<dt id="trax.data.inputs.Inputs.example_shape_dtype">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">example_shape_dtype</span></code><a class="headerlink" href="#trax.data.inputs.Inputs.example_shape_dtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shape and Dtype of an example batch.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="trax.data.inputs.Inputs.input_dtype">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">input_dtype</span></code><a class="headerlink" href="#trax.data.inputs.Inputs.input_dtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dtype of the input.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="trax.data.inputs.Inputs.input_shape">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">input_shape</span></code><a class="headerlink" href="#trax.data.inputs.Inputs.input_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Example input shape, without batch dimension.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="trax.data.inputs.Inputs.target_dtype">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">target_dtype</span></code><a class="headerlink" href="#trax.data.inputs.Inputs.target_dtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dtype of the target.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="trax.data.inputs.Inputs.target_shape">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">target_shape</span></code><a class="headerlink" href="#trax.data.inputs.Inputs.target_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Example target shape, without batch dimension.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.Log">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">Log</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_steps_per_example</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_shapes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#Log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.Log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a logging component of the input pipeline.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.MixMLMAndPrefixLM">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">MixMLMAndPrefixLM</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mlm_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_lm_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean_noise_span_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vocab_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">512</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#MixMLMAndPrefixLM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.MixMLMAndPrefixLM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parallel between MLM and PrefixLM outputs.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.PadToLength">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">PadToLength</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">len_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiple</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#PadToLength"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.PadToLength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pads the values to lengths given in <a href="#id5"><span class="problematic" id="id6">`</span></a>len_map’.</p>
+<p>len_map contains a dictionary of example keys to dimension sizes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>len_map</strong> – dict of int to int, we pad examples to lengths
+given by the values of the dict. If multiple is True, the dimensions are
+padded to multiple of this value.</p></li>
+<li><p><strong>pad_value</strong> – dict of int to int. The value gets applied to
+constant_values on numpy.pad per given dimension.</p></li>
+<li><p><strong>multiple</strong> – boolean. If False, pads to the value of len_map. If True, pads to
+closest multiple of value of len_map.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Function to pad examples to given lengths.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.Parallel">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">Parallel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">counters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#Parallel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.Parallel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combines generator functions into one that runs them in parallel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fns</strong> – a sequence of datasets which are combined in parallel.</p></li>
+<li><p><strong>counters</strong> – a sequence of ints with same length as fns, please see comments on
+its use below.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the generator yields samples according to given;
+if counters are not given then samples are genereted uniformly.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>parallel_generator</p>
+</dd>
+</dl>
+<p>Example 1:</p>
+<blockquote>
+<div><p>gen = data.Parallel([dataset1, dataset2, dataset3], counters=(2, 1, 3))</p>
+</div></blockquote>
+<p>defines a generator that yields 33% examples from dataset1, 16% examples from
+dataset2 and 50% examples from dataset3.</p>
+<p>Example 2:</p>
+<blockquote>
+<div><p>gen = data.Parallel([dataset1, dataset2, dataset3], counters=(20, 50, 30))</p>
+</div></blockquote>
+<p>defines a generator that yields 20% examples from dataset1, 50% examples from
+dataset2 and 30% examples from dataset3.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.Serial">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">Serial</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#Serial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.Serial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combines generator functions into one that runs them serially.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.Shuffle">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">Shuffle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">queue_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1024</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#Shuffle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.Shuffle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a shuffle function with the given queue size.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.TruncateToLength">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">TruncateToLength</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">len_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#TruncateToLength"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.TruncateToLength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Truncates features in an example to lengths given in <cite>len_map</cite>.</p>
+<p>len_map contains a dictionary of example keys to tuples of dimension sizes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>len_map</strong> – dict of int to int tuples (shapes), we truncate examples
+where a feature’s size is beyond the max. Ex: {0: (1, 512), 1: 64}
+will truncate examples to be within those bounds.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Function to truncate length of examples.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.UniformlySeek">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">UniformlySeek</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_hosts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#UniformlySeek"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.UniformlySeek" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets each host at (dataset_size/n_hosts)-th of the dataset.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.add_loss_weights">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">add_loss_weights</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_to_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#add_loss_weights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.add_loss_weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add weights to inputs without weights and masks by id if requested.</p>
+<p>The generator stream is augmented in the following way:</p>
+<ul class="simple">
+<li><p>If the stream consists of pairs <cite>(inputs, targets)</cite>, a loss mask is added
+that is creates as a tensor of ones of the same shape as targets.</p></li>
+<li><p>If <cite>id_to_mask</cite> is not <cite>None</cite>, and the stream (after the previous point)
+has triples <cite>(inputs, targets, weights)</cite>, the weights are multiplied by a
+0/1 mask that is 0 iff targets is equal to <cite>id_to_mask</cite> (1 otherwise).</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>generator</strong> – Stream of tuples.</p></li>
+<li><p><strong>id_to_mask</strong> – If not None, int-valued id that represents padding, as opposed
+to true target IDs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p>Examples from the augmented stream.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.addition_inputs">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">addition_inputs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vocab_size=&lt;object</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">batch_size=&lt;object</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">train_length=&lt;object</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">eval_min_length=&lt;object</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">eval_max_length=&lt;object</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">pad_to_multiple=32</span></em>, <em class="sig-param"><span class="pre">encdec=False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#addition_inputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.addition_inputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inputs for the add problem: &lt;S&gt;x+y&lt;S&gt;(x+y).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vocab_size</strong> – how many symbols to use.</p></li>
+<li><p><strong>batch_size</strong> – how large are the batches.</p></li>
+<li><p><strong>train_length</strong> – maximal length of w for training.</p></li>
+<li><p><strong>eval_min_length</strong> – minimal length of w for eval.</p></li>
+<li><p><strong>eval_max_length</strong> – maximal length of w for eval.</p></li>
+<li><p><strong>pad_to_multiple</strong> – int, pad length to be multiple of this number.</p></li>
+<li><p><strong>encdec</strong> – bool, if True return encoder-decoder style inputs (default: False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>trax.inputs.Inputs</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.batch">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">batch</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Batch and pad generator as in tf.data.Dataset.padded_batch.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.batch_fn">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">batch_fn</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_devices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_shapes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size_per_device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bucket_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buckets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buckets_include_inputs_in_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_shuffle_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_eval_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_to_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_pad_on_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#batch_fn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.batch_fn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Batching function.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.batcher">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">batcher</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data_streams=&lt;object</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">variable_shapes=True</span></em>, <em class="sig-param"><span class="pre">batch_size_per_device=32</span></em>, <em class="sig-param"><span class="pre">batch_size=None</span></em>, <em class="sig-param"><span class="pre">eval_batch_size=32</span></em>, <em class="sig-param"><span class="pre">bucket_length=32</span></em>, <em class="sig-param"><span class="pre">buckets=None</span></em>, <em class="sig-param"><span class="pre">buckets_include_inputs_in_length=False</span></em>, <em class="sig-param"><span class="pre">batch_shuffle_size=None</span></em>, <em class="sig-param"><span class="pre">max_eval_length=None</span></em>, <em class="sig-param"><span class="pre">id_to_mask=None</span></em>, <em class="sig-param"><span class="pre">strict_pad_on_len=False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#batcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.batcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Batcher: create trax Inputs from single-example data-streams.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.bucket_by_length">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">bucket_by_length</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundaries</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_sizes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_pad_on_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#bucket_by_length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.bucket_by_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bucket by length, like tf.data.experimental.bucket_by_sequence_length.</p>
+<p>This function draws examples from the provided <cite>generator</cite> and puts an
+example into a bucket depending on <cite>l = length_fn(example)</cite>. Which bucket
+is used depends on between which <cite>boundaries</cite> is l. When a bucket reaches
+its batch size, as specified by <cite>batch_sizes</cite>, generates a batch of
+padded examples from this bucket.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>generator</strong> – python generator to draw data from.</p></li>
+<li><p><strong>length_fn</strong> – a function taking the example and returning the length.</p></li>
+<li><p><strong>boundaries</strong> – a list of bucket boundaries.</p></li>
+<li><p><strong>batch_sizes</strong> – a list of batch sizes.</p></li>
+<li><p><strong>strict_pad_on_len</strong> – bool; if true we pad on the length dimension, dim[0]
+strictly as a multiple of boundary.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p>An input batch, which comes from one of the buckets.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.consume_noise_mask">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">consume_noise_mask</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vocab_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#consume_noise_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.consume_noise_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Consumes (tokens, noise mask) and returns (inputs, targets).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.count_and_skip">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">count_and_skip</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#count_and_skip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.count_and_skip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Count the number of items in the generator, skip already counted ones.</p>
+<p>This function counts the number of processed examples and puts it into
+the global variable <cite>counters</cite>. This variable can be saved and restored,
+and if restored, this function will skip examples until the restored counter
+is reached. When the data generator is deterministic, this allows to restore
+the data reading process from a checkpoint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>generator</strong> – generator for examples in the dataset.</p></li>
+<li><p><strong>name</strong> – string, a unique id that we use to count the examples</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p>The examples from generator but first skip the number specified in the
+global variable counters[name] and next increment this variable every
+time a new example appears.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.generate_prefix_lm_sequential_chunks">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">generate_prefix_lm_sequential_chunks</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#generate_prefix_lm_sequential_chunks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.generate_prefix_lm_sequential_chunks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a function that generates prefix lm chunks of max_length length.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.generate_random_noise_mask">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">generate_random_noise_mask</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">noise_density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean_noise_span_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#generate_random_noise_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.generate_random_noise_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a function that generates a random noise mask.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.generate_sequential_chunks">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">generate_sequential_chunks</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#generate_sequential_chunks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.generate_sequential_chunks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a function that generates chunks of atmost max_length length.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.load_data_counters">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">load_data_counters</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#load_data_counters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.load_data_counters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checkpoint data counters.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.lower_endian_to_number">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">lower_endian_to_number</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#lower_endian_to_number"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.lower_endian_to_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function: convert a list of digits in the given base to a number.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.make_additional_stream">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">make_additional_stream</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">stream=&lt;object</span> <span class="pre">object&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#make_additional_stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.make_additional_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a stream mostly for use in gin configs for additional tasks.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.make_inputs">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">make_inputs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">train_stream=&lt;object</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">eval_stream=None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#make_inputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.make_inputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create Inputs from two streams; mostly for use in gin configs.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.make_parallel_stream">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">make_parallel_stream</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">streams=&lt;object</span> <span class="pre">object&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#make_parallel_stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.make_parallel_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a parallel stream for use in gin configs for additional tasks.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.number_to_lower_endian">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">number_to_lower_endian</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#number_to_lower_endian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.number_to_lower_endian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function: convert a number to a list of digits in the given base.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.pad_to_max_dims">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">pad_to_max_dims</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_pad_on_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#pad_to_max_dims"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.pad_to_max_dims" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pad a tuple of tensors to a joint dimension and return their batch.</p>
+<p>For example, a pair of tensors of shape (2, 10) and (3, 9) will be padded
+to (3, 10) both and the returned tensor will have shape (2, 3, 10).</p>
+<p>When boundary is specified, we try to pad all unknown dimensions to boundary
+if possible, which can help reduce the number of different shapes occurring
+in the tensors and speed up XLA compilation. So, for example, a pair of
+tensors of shapes (8, 10), (8, 9) with boundary=12 will be padded to (8, 12).</p>
+<p>One special case occurs when boundary is much higher than the padding length
+that we’d use without boundary. For example, tensors (2, 10) and (3, 9) with
+boundary=12 could end up padded to (12, 12), but this is very wasteful in
+the first dimension. In that case, we will use the closest power-of-2 instead
+of the boundary, so the we will end up padding to (4, 12) instead of (12, 12).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tensors</strong> – a tuple or list of tensors to pad</p></li>
+<li><p><strong>boundary</strong> – int or None; if given, expand the padded dimensions to this size</p></li>
+<li><p><strong>strict_pad_on_len</strong> – bool; if true we pad on the length dimension, dim[0]
+strictly as a multiple of boundary.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a tensor, the tensors padded together</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.random_inputs">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">random_inputs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">input_shape=&lt;object</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">input_dtype=&lt;class</span> <span class="pre">'jax._src.numpy.lax_numpy.int32'&gt;</span></em>, <em class="sig-param"><span class="pre">input_range=(0</span></em>, <em class="sig-param"><span class="pre">255)</span></em>, <em class="sig-param"><span class="pre">output_shape=&lt;object</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">output_dtype=&lt;class</span> <span class="pre">'jax._src.numpy.lax_numpy.int32'&gt;</span></em>, <em class="sig-param"><span class="pre">output_range=(0</span></em>, <em class="sig-param"><span class="pre">9)</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#random_inputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.random_inputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make random Inputs for debugging.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_shape</strong> – the shape of inputs (including batch dimension).</p></li>
+<li><p><strong>input_dtype</strong> – the type of the inputs (int32 by default).</p></li>
+<li><p><strong>input_range</strong> – the range of inputs (defaults to (0, 255)).</p></li>
+<li><p><strong>output_shape</strong> – the shape of outputs (including batch dimension).</p></li>
+<li><p><strong>output_dtype</strong> – the type of the outputs (int32 by default).</p></li>
+<li><p><strong>output_range</strong> – the range of outputs (defaults to (0, 9)).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>trax.inputs.Inputs</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.random_number_lower_endian">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">random_number_lower_endian</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#random_number_lower_endian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.random_number_lower_endian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function: generate a random number as a lower-endian digits list.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.random_spans_noise_mask">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">random_spans_noise_mask</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean_noise_span_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">example</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#random_spans_noise_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.random_spans_noise_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes span corruption masks given input parameters.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.save_data_counters">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">save_data_counters</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#save_data_counters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.save_data_counters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checkpoint data counters.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.sequence_copy_inputs">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">sequence_copy_inputs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vocab_size=&lt;object</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">batch_size=&lt;object</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">train_length=&lt;object</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">eval_min_length=&lt;object</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">eval_max_length=&lt;object</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">reverse=False</span></em>, <em class="sig-param"><span class="pre">pad_to_multiple=32</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#sequence_copy_inputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.sequence_copy_inputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inputs for the sequence copy problem: 0w0w for w in [1..vocab_size-1]*.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vocab_size</strong> – how many symbols to use.</p></li>
+<li><p><strong>batch_size</strong> – how large are the batches.</p></li>
+<li><p><strong>train_length</strong> – maximum length of w for training.</p></li>
+<li><p><strong>eval_min_length</strong> – minimum length of w for eval.</p></li>
+<li><p><strong>eval_max_length</strong> – maximum length of w for eval.</p></li>
+<li><p><strong>reverse</strong> – bool (optional, false by default): reverse the second sequence.</p></li>
+<li><p><strong>pad_to_multiple</strong> – int, pad length to be multiple of this number.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>trax.inputs.Inputs</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.shuffle">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">shuffle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#shuffle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.shuffle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shuffles a sample stream using a random-out next-in queue of given size.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samples</strong> – Stream of samples for eventual use as training data or eval data.</p></li>
+<li><p><strong>queue_size</strong> – Minimum number of samples within which the streamed shuffling
+takes place.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p>Shuffled stream of samples, ready for further processing, e.g., grouping
+into batches.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="trax.data.inputs.simple_sequence_copy_inputs">
+<code class="sig-prename descclassname"><span class="pre">trax.data.inputs.</span></code><code class="sig-name descname"><span class="pre">simple_sequence_copy_inputs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vocab_size=&lt;object</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">batch_size=&lt;object</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">train_length=&lt;object</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">eval_min_length=&lt;object</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">eval_max_length=&lt;object</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">pad_to_multiple=32</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/trax/data/inputs.html#simple_sequence_copy_inputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trax.data.inputs.simple_sequence_copy_inputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inputs for the sequence copy problem: w for w in [1..vocab_size-1]*.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vocab_size</strong> – how many symbols to use.</p></li>
+<li><p><strong>batch_size</strong> – how large are the batches.</p></li>
+<li><p><strong>train_length</strong> – maximum length of w for training.</p></li>
+<li><p><strong>eval_min_length</strong> – minimum length of w for eval.</p></li>
+<li><p><strong>eval_max_length</strong> – maximum length of w for eval.</p></li>
+<li><p><strong>pad_to_multiple</strong> – int, pad length to be multiple of this number.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>trax.inputs.Inputs</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+  <footer class="footer">
+    <div class="container">
+      <p class="pull-right">
+        <a href="#">Back to top</a>
+        
+      </p>
+
+      <p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="https://necromuralist.github.io/Anechoic-Echolalia/">Anechoic Echolalia</a> by <a rel="cc:attributionURL dct:creator" property="cc:attributionName" href="https://github.com/necromuralist">The Cloistered Monkey</a> is licensed under <a href="http://creativecommons.org/licenses/by/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">CC BY 4.0<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"></a>
+          Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.1.<br/>
+
+      </p>
+    </div>
+  </footer>
+  
+
+  </body>
+</html>
