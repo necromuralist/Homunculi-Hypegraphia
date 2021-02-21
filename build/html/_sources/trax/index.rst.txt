@@ -5,6 +5,8 @@ Trax
    :maxdepth: 2
    :caption: Contents:
 
+   data/index
+
 
 Indices and tables
 ==================

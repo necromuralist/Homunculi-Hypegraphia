@@ -35,6 +35,7 @@ release = '0.0'
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
+    "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
 ]
 
@@ -68,5 +69,6 @@ html_css_files = [
 ]
 
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/3", None)
+    "python": ("https://docs.python.org/3", None),
+    "trax": ("https://trax.readthedocs.io/en/latest/", None),
 }

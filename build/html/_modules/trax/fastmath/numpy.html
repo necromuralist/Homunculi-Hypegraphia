@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>trax.fastmath.numpy &#8212; Homunculi Hypergraphia 0.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/monkey-style.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          Homunculi Hypergraphia</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../trax/index.html">Trax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../trax/index.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for trax.fastmath.numpy</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding=utf-8</span>
+<span class="c1"># Copyright 2021 The Trax Authors.</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="c1"># limitations under the License.</span>
+
+<span class="sd">&quot;&quot;&quot;Trax fast math: pure numpy backend.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">logsumexp</span>
+<span class="kn">from</span> <span class="nn">trax.shapes</span> <span class="kn">import</span> <span class="n">signature</span>
+
+
+<span class="k">def</span> <span class="nf">get_prng</span><span class="p">(</span><span class="n">seed</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;JAX-compatible way of getting PRNG seeds.&quot;&quot;&quot;</span>
+  <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">seed</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;PRNGKey seed must be a scalar.&#39;</span><span class="p">)</span>
+  <span class="n">convert</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">k</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+  <span class="n">k1</span> <span class="o">=</span> <span class="n">convert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bitwise_and</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">right_shift</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="mh">0xFFFFFFFF</span><span class="p">))</span>
+  <span class="n">k2</span> <span class="o">=</span> <span class="n">convert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bitwise_and</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="mh">0xFFFFFFFF</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">k1</span><span class="p">,</span> <span class="n">k2</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">random_uniform</span><span class="p">(</span><span class="n">rng</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">minval</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+  <span class="k">del</span> <span class="n">rng</span>
+  <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">random_normal</span><span class="p">(</span><span class="n">rng</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">):</span>
+  <span class="k">del</span> <span class="n">rng</span>
+  <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">random_randint</span><span class="p">(</span><span class="n">rng</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">):</span>
+  <span class="k">del</span> <span class="n">rng</span>
+  <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">random_bernoulli</span><span class="p">(</span><span class="n">rng</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">()):</span>
+  <span class="k">del</span> <span class="n">rng</span>
+  <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">np_abstract_eval</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;Abstract evaluation in numpy by running the real function on 0s.&quot;&quot;&quot;</span>
+  <span class="k">def</span> <span class="nf">abstract_f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">real_args</span> <span class="o">=</span> <span class="p">[</span><span class="n">nested_map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">a</span><span class="p">)</span>
+                 <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
+    <span class="n">real_res</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">real_args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">signature</span><span class="p">(</span><span class="n">real_res</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">abstract_f</span>
+
+
+<span class="n">NUMPY_BACKEND</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;abstract_eval&#39;</span><span class="p">:</span> <span class="n">np_abstract_eval</span><span class="p">,</span>
+    <span class="s1">&#39;device_count&#39;</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s1">&#39;jit&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="p">,</span>
+    <span class="s1">&#39;logsumexp&#39;</span><span class="p">:</span> <span class="n">logsumexp</span><span class="p">,</span>
+    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;numpy&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;np&#39;</span><span class="p">:</span> <span class="n">np</span><span class="p">,</span>
+    <span class="s1">&#39;random_bernoulli&#39;</span><span class="p">:</span> <span class="n">random_bernoulli</span><span class="p">,</span>
+    <span class="s1">&#39;random_get_prng&#39;</span><span class="p">:</span> <span class="n">get_prng</span><span class="p">,</span>
+    <span class="s1">&#39;random_normal&#39;</span><span class="p">:</span> <span class="n">random_normal</span><span class="p">,</span>
+    <span class="s1">&#39;random_randint&#39;</span><span class="p">:</span> <span class="n">random_randint</span><span class="p">,</span>
+    <span class="s1">&#39;random_split&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">prng</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">2</span><span class="p">:</span> <span class="p">(</span><span class="kc">None</span><span class="p">,)</span> <span class="o">*</span> <span class="n">num</span><span class="p">,</span>
+    <span class="s1">&#39;random_uniform&#39;</span><span class="p">:</span> <span class="n">random_uniform</span><span class="p">,</span>
+    <span class="s1">&#39;expit&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">)),</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">nested_map</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ignore_nones</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;Maps `f` recursively inside any dicts/lists/tuples in `obj`.</span>
+
+<span class="sd">  Args:</span>
+<span class="sd">    f: A function taking a single object as input. f&#39;s input must NOT be a</span>
+<span class="sd">        dict, list, or tuple, or any subclass of those.</span>
+<span class="sd">    obj: Either an input object to f or some nested structure of collections</span>
+<span class="sd">        of (collections of ...) input objects to f.</span>
+<span class="sd">    level: Level in the nested structure to stop at, counted from the leaves -</span>
+<span class="sd">        so level 0 is the leaf, level 1 is such that all of its children are at</span>
+<span class="sd">        level 0 etc.</span>
+<span class="sd">    ignore_nones: Whether to ignore Nones in the structure, i.e. return None</span>
+<span class="sd">        without calling `f`.</span>
+
+<span class="sd">  Returns:</span>
+<span class="sd">    An object with the same nested structure as `obj`, but with each input</span>
+<span class="sd">    object `x` replaced by `f(x)`.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="k">if</span> <span class="n">_is_at_level</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">ignore_nones</span> <span class="ow">and</span> <span class="n">_is_made_of_nones</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+      <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+  <span class="k">if</span> <span class="n">_is_namedtuple_instance</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)(</span><span class="o">*</span><span class="n">nested_map</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span> <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">))</span>
+  <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">nested_map</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">]</span>
+  <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">nested_map</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">])</span>
+  <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">nested_map</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+  <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Non-exhaustive pattern match for </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">nested_map_multiarg</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">objs</span><span class="p">,</span> <span class="n">ignore_nones</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;Maps multi-arg `f` recursively inside any dicts/lists/tuples in `objs`.</span>
+
+<span class="sd">  Args:</span>
+<span class="sd">    f: A function taking len(objs) inputs. f&#39;s input must NOT be a</span>
+<span class="sd">        dict, list, or tuple, or any subclass of those.</span>
+<span class="sd">    *objs: Either input objects to f or some nested structure of collections</span>
+<span class="sd">        of (collections of ...) input objects to f.</span>
+<span class="sd">    ignore_nones: Whether to ignore Nones in the structure, i.e. return None</span>
+<span class="sd">        without calling `f`.</span>
+
+<span class="sd">  Returns:</span>
+<span class="sd">    An object with the same nested structure as `objs[0]`, but with each input</span>
+<span class="sd">    object `x` replaced by `f(*xs)`.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">objs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">nested_map_multiarg</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="p">[</span><span class="n">o</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">objs</span><span class="p">[</span><span class="mi">0</span><span class="p">]))]</span>
+  <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">objs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">nested_map_multiarg</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="p">[</span><span class="n">o</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">])</span>
+                  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">objs</span><span class="p">[</span><span class="mi">0</span><span class="p">]))])</span>
+  <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">objs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">nested_map_multiarg</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="p">[</span><span class="n">o</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">[</span><span class="mi">0</span><span class="p">]}</span>
+  <span class="k">if</span> <span class="n">ignore_nones</span> <span class="ow">and</span> <span class="n">_is_made_of_nones</span><span class="p">(</span><span class="n">objs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="kc">None</span>
+  <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">objs</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">nested_zip</span><span class="p">(</span><span class="n">objs</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;Zips the leaves of each nested structure in `objs`.</span>
+
+<span class="sd">  Args:</span>
+<span class="sd">    objs: List of nested structures to zip.</span>
+
+<span class="sd">  Returns:</span>
+<span class="sd">    An object with the same nested structure as each element of `objs`, with</span>
+<span class="sd">    leaves zipped together into tuples.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">objs</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span>
+  <span class="k">assert</span> <span class="n">objs</span><span class="p">,</span> <span class="s1">&#39;Cannot zip an empty sequence.&#39;</span>
+
+  <span class="k">if</span> <span class="n">_is_at_level</span><span class="p">(</span><span class="n">objs</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span>
+
+  <span class="k">if</span> <span class="n">_is_namedtuple_instance</span><span class="p">(</span><span class="n">objs</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+    <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">objs</span><span class="p">[</span><span class="mi">0</span><span class="p">])(</span><span class="o">*</span><span class="n">nested_zip</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">objs</span><span class="p">))))</span>
+  <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">objs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">nested_zip</span><span class="p">([</span><span class="n">obj</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">objs</span><span class="p">[</span><span class="mi">0</span><span class="p">]))]</span>
+  <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">objs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">nested_zip</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">objs</span><span class="p">)))</span>
+  <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">objs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">nested_zip</span><span class="p">([</span><span class="n">obj</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">[</span><span class="mi">0</span><span class="p">]}</span>
+
+  <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Non-exhaustive pattern match for </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">objs</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+
+<span class="k">def</span> <span class="nf">nested_stack</span><span class="p">(</span><span class="n">objs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">np_module</span><span class="o">=</span><span class="n">np</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;Stacks the numpy arrays inside any dicts/lists/tuples in `objs`.</span>
+
+<span class="sd">  Args:</span>
+<span class="sd">    objs: List of nested structures to stack.</span>
+<span class="sd">    axis: Axis to stack along.</span>
+<span class="sd">    np_module: numpy module to use - typically numpy or jax.numpy.</span>
+
+<span class="sd">  Returns:</span>
+<span class="sd">    An object with the same nested structure as each element of `objs`, with</span>
+<span class="sd">    leaves stacked together into numpy arrays. Nones are propagated, i.e. if</span>
+<span class="sd">    each element of the stacked sequence is None, the output will be None.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="c1"># nested_map the stacking operation, but stopping at level 1 so at tuples of</span>
+  <span class="c1"># numpy arrays.</span>
+  <span class="k">return</span> <span class="n">nested_map</span><span class="p">(</span>
+      <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np_module</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">),</span>
+      <span class="n">nested_zip</span><span class="p">(</span><span class="n">objs</span><span class="p">),</span>
+      <span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+  <span class="p">)</span>
+
+
+<div class="viewcode-block" id="tree_flatten"><a class="viewcode-back" href="../../../trax/data/serial.html#trax.fastmath.numpy.tree_flatten">[docs]</a><span class="k">def</span> <span class="nf">tree_flatten</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;Flatten a tree into a list.&quot;&quot;&quot;</span>
+  <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+    <span class="c1"># In python, sum of lists starting from [] is the concatenation.</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="n">tree_flatten</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tree</span><span class="p">],</span> <span class="p">[])</span>
+  <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># Only use the values in case of a dictionary node.</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="n">tree_flatten</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">values</span><span class="p">()],</span> <span class="p">[])</span>
+  <span class="k">return</span> <span class="p">[</span><span class="n">tree</span><span class="p">]</span></div>
+
+
+<span class="k">def</span> <span class="nf">tree_leaves</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">ignore_nones</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;Gets the leaves of a tree.&quot;&quot;&quot;</span>
+
+  <span class="c1"># Right now this is just `tree_flatten`, but we keep this separate since</span>
+  <span class="c1"># JAX&#39;s tree_flatten returns the structure of the tree as well.</span>
+  <span class="n">flattened</span> <span class="o">=</span> <span class="n">tree_flatten</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
+  <span class="k">return</span> <span class="p">[</span><span class="n">flat</span> <span class="k">for</span> <span class="n">flat</span> <span class="ow">in</span> <span class="n">flattened</span> <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">ignore_nones</span><span class="p">)</span> <span class="ow">or</span> <span class="n">flat</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">tree_unflatten</span><span class="p">(</span><span class="n">flat</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">copy_from_tree</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;Unflatten a list into a tree given the tree shape as second argument.</span>
+
+<span class="sd">  Args:</span>
+<span class="sd">    flat: a flat list of elements to be assembled into a tree.</span>
+<span class="sd">    tree: a tree with the structure we want to have in the new tree.</span>
+<span class="sd">    copy_from_tree: optional list of elements that we just copy from tree.</span>
+<span class="sd">      This argument is used when the flat version does not contain all elements</span>
+<span class="sd">      of the expected tree but just a subset, while the rest are filled from</span>
+<span class="sd">      the tree itself. It allows to omit &quot;unnecessary&quot; elements. For example,</span>
+<span class="sd">      consider trees (A, (B, X), X) and (X, (A, X), B) where X is some element</span>
+<span class="sd">      we do not care about. Flattening the first tree and removing X will yield</span>
+<span class="sd">      a flat list [A, B] and the second tree can then be reconstructed from this</span>
+<span class="sd">      list and the tree (X, (E, X), E) with copy_from_tree=[X]. One example</span>
+<span class="sd">      where this is used is the weights-tree of a model, where layers with no</span>
+<span class="sd">      weights have () in the tree and we use copy_from_tree=[()] to restore</span>
+<span class="sd">      a model from a file that only has a list of trainable weights.</span>
+
+<span class="sd">  Returns:</span>
+<span class="sd">    A pair (new_tree, rest_of_flat) where the new tree that has the structure</span>
+<span class="sd">    of tree but with leaves from flat, and the remaining elements of flat if</span>
+<span class="sd">    more were provided than the number of leaves of tree (useful for recursion).</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="k">if</span> <span class="n">copy_from_tree</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">tree</span> <span class="ow">in</span> <span class="n">copy_from_tree</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">tree</span><span class="p">,</span> <span class="n">flat</span>
+  <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+    <span class="n">new_tree</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">flat</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tree</span><span class="p">:</span>
+      <span class="n">new_t</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">tree_unflatten</span><span class="p">(</span><span class="n">rest</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">copy_from_tree</span><span class="o">=</span><span class="n">copy_from_tree</span><span class="p">)</span>
+      <span class="n">new_tree</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_t</span><span class="p">)</span>
+    <span class="n">new_tree</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">new_tree</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">new_tree</span>
+    <span class="k">return</span> <span class="n">new_tree</span><span class="p">,</span> <span class="n">rest</span>
+  <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="n">new_tree</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">flat</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">tree</span><span class="p">:</span>
+      <span class="n">new_v</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">tree_unflatten</span><span class="p">(</span><span class="n">rest</span><span class="p">,</span> <span class="n">tree</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">copy_from_tree</span><span class="o">=</span><span class="n">copy_from_tree</span><span class="p">)</span>
+      <span class="n">new_tree</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_v</span>
+    <span class="k">return</span> <span class="n">new_tree</span><span class="p">,</span> <span class="n">rest</span>
+  <span class="k">return</span> <span class="n">flat</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">flat</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+
+<span class="k">def</span> <span class="nf">_is_namedtuple_instance</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;Checks if `x` is an instance of a `namedtuple` type.&quot;&quot;&quot;</span>
+  <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+    <span class="k">return</span> <span class="kc">False</span>
+  <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;_fields&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_is_at_level</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;Checks if `obj` is an at level `level`.&quot;&quot;&quot;</span>
+  <span class="n">is_leaf</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">dict</span><span class="p">))</span>
+  <span class="k">if</span> <span class="n">level</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">is_leaf</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">level</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="n">is_leaf</span>
+
+  <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="n">elems</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+  <span class="k">else</span><span class="p">:</span>
+    <span class="n">elems</span> <span class="o">=</span> <span class="n">obj</span>
+  <span class="k">return</span> <span class="n">elems</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">_is_at_level</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">level</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">elems</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_is_made_of_nones</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;Checks if `obj` is a nested structure of `None`s.&quot;&quot;&quot;</span>
+  <span class="n">elems</span> <span class="o">=</span> <span class="n">tree_flatten</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+  <span class="c1"># Returning False for an empty list, because it doesn&#39;t have any Nones inside.</span>
+  <span class="k">return</span> <span class="n">elems</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">elems</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+  <footer class="footer">
+    <div class="container">
+      <p class="pull-right">
+        <a href="#">Back to top</a>
+        
+      </p>
+
+      <p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="https://necromuralist.github.io/Anechoic-Echolalia/">Anechoic Echolalia</a> by <a rel="cc:attributionURL dct:creator" property="cc:attributionName" href="https://github.com/necromuralist">The Cloistered Monkey</a> is licensed under <a href="http://creativecommons.org/licenses/by/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">CC BY 4.0<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"></a>
+          Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.1.<br/>
+
+      </p>
+    </div>
+  </footer>
+  
+
+  </body>
+</html>
