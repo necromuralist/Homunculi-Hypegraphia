@@ -1,0 +1,18 @@
+#+BEGIN_COMMENT
+.. title: The Altair Tutorial
+.. slug: the-altair-tutorial
+.. date: 2021-12-31 23:07:15 UTC
+.. tags: altair,visualization,tutorial
+.. category: Altair
+.. link: 
+.. description: The Altair Tutorial
+.. type: text
+
+#+END_COMMENT
+#+OPTIONS: ^:{}
+#+TOC: headlines 3
+
+This is a master post for posts I'm making to follow [[https://altair-viz.github.io/altair-tutorial/README.html][the Altair Tutorial]] which was originally made for PyCon 2018.
+
+ - {{% lancelot "The Cars Dataset" %}}altair-tutorial-cars{{% /lancelot %}}
+ - {{% lancelot "Binning and Aggregation" %}}altair-tutorial-binning-and-aggregation{{% /lancelot %}}
