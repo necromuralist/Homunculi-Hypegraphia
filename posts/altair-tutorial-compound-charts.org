@@ -222,7 +222,7 @@ save_chart(chart, "petal-length-widths-vertical", output_path=OUTPUT_PATH, heigh
   To make a complete set of comparisons altair provides a ~repeat~ function that lets you create a list of column names and pass them in as a bunch.
 
 
-The last column is the species so we'll grab all the ones before it. Note that the default columns object is an Index, so you have to cast it to a list or an array.
+The last column is the species so we'll grab all the ones before it. Note that the default columns object is an Index, so you have to cast it to a list or an array (or just make a new list).
 
 #+begin_src python :results none
 columns = list(iris.columns[:-1])
