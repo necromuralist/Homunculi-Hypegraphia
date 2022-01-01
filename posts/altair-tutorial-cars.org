@@ -21,7 +21,7 @@
 %autoreload 2
 #+END_SRC
 * Beginning
-  This is a walk-through of the [[https://altair-viz.github.io/altair-tutorial/notebooks/01-Cars-Demo.html][Altair Cars Demonstration]], part of the {{% doc %}}the-altair-tutorial{{% /doc %}}.
+  This is a walk-through of the [[https://altair-viz.github.io/altair-tutorial/notebooks/01-Cars-Demo.html][Altair Cars Demonstration]], part of {{% doc %}}the-altair-tutorial{{% /doc %}}.
 
 ** Imports
 

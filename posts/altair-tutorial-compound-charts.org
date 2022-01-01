@@ -1,0 +1,258 @@
+#+BEGIN_COMMENT
+.. title: Altair Tutorial: Compound Charts
+.. slug: altair-tutorial-compound-charts
+.. date: 2021-12-31 23:36:39 UTC
+.. tags: altair,tutorial,visualization
+.. category: Visualization
+.. link: 
+.. description: Looking at how altair builds up chart layers and facetts.
+.. type: text
+
+#+END_COMMENT
+#+PROPERTY: header-args :session ~/.local/share/jupyter/runtime/kernel-f2ce5350-4a4e-4ffb-8457-8eb0f1170838-ssh.json
+#+OPTIONS: ^:{}
+#+TOC: headlines 3
+
+#+BEGIN_SRC python :results none :exports none
+%load_ext autoreload
+%autoreload 2
+#+END_SRC
+
+* Beginning
+  This is a look at the [[https://altair-viz.github.io/altair-tutorial/notebooks/04-Compound-charts.html][Altair Compound Charts demonstration]], part of  {{% doc %}}the-altair-tutorial{{% /doc %}}.
+
+** Imports
+
+#+begin_src python :results none
+# python
+from collections import namedtuple
+from functools import partial
+from pathlib import Path
+
+# pypi
+from vega_datasets import data
+from tabulate import tabulate
+
+import altair
+
+# this project
+from ignotum.altair_helpers import output_path, print_org_table, save_chart
+#+end_src
+
+** Helpers
+#+begin_src python :results none
+SLUG = "altair-tutorial-compound-charts"
+OUTPUT_PATH = output_path(SLUG)
+
+PLOT = namedtuple("Plot", ["width", "height"], defaults=[800, 500])()
+#+end_src
+
+* Layers
+  Like HoloViews an ggplot2, altair allows you to create the elements of your chart as separate objects and combine them using operators. The main operator for layering is the ~+~.
+
+** Data: Stocks
+
+#+begin_src python :results output :display text/org
+stocks = data.stocks()
+
+print_org_table(stocks.sample(5))
+#+end_src
+
+| symbol   | date                |   price |
+|----------+---------------------+---------|
+| GOOG     | 2005-02-01 00:00:00 |  187.99 |
+| AAPL     | 2009-02-01 00:00:00 |   89.31 |
+| AAPL     | 2001-07-01 00:00:00 |    9.4  |
+| GOOG     | 2008-07-01 00:00:00 |  473.75 |
+| GOOG     | 2009-01-01 00:00:00 |  338.53 |
+
+#+begin_src python :results output :exports both
+chart = altair.Chart(stocks).mark_line().encode(
+    x="date:T",
+    y="price",
+    color="symbol",
+    tooltip=["symbol", "price", "date"]
+).properties(
+    title="Stock Prices",
+    width=PLOT.width,
+)
+
+save_chart(chart, "stock_prices_lines", output_path=OUTPUT_PATH, height=400)
+#+end_src
+
+#+RESULTS:
+#+begin_export html
+<object type="text/html" data="stock_prices_lines.html" style="width:100%" height=400>
+  <p>Figure Missing</p>
+</object>
+#+end_export
+
+** Lines Plus Circles
+
+   To combine plots you can create them separately and add them. You can either create completely separate charts or start with a base chart that has the common elements and just change the marks to get the different plots. Here I'll start with a common base and make a point and a line plot and combine them.
+
+#+begin_src python :results output :exports both
+base = altair.Chart(stocks).encode(
+    x="date:T",
+    y="price",
+    color="symbol",
+    tooltip=["symbol", "price", "date"]
+)
+
+chart = (base.mark_point() + base.mark_line()).properties(
+    title="Stock Prices",
+    width=PLOT.width,
+)
+
+save_chart(chart, "stock_prices_points_lines", output_path=OUTPUT_PATH, height=400)
+#+end_src
+
+#+RESULTS:
+#+begin_export html
+<object type="text/html" data="stock_prices_points_lines.html" style="width:100%" height=400>
+  <p>Figure Missing</p>
+</object>
+#+end_export
+
+The ~+~ operator is syntactic sugar for the ~layer~ method. You could do the samething with the function call instead.
+
+#+begin_src python :results none
+altair.layer(lines, points)
+#+end_src
+
+* Concatenation
+** Horizontal
+
+  Sometimes you might want to put plots adjacent to each other but not on top of each other, this is where altair's concatenation features come in. The stocks dataset doesn't really have features that take advantage of concatenation so let's load Fisher's iris data instead.
+
+#+begin_src python :results outpt :exports both
+iris = data.iris()
+print_org_table(iris.sample(5))
+#+end_src
+
+#+RESULTS:
+|   sepalLength |   sepalWidth |   petalLength |   petalWidth | species   |
+|---------------+--------------+---------------+--------------+-----------|
+|           6.9 |          3.2 |           5.7 |          2.3 | virginica |
+|           5.2 |          4.1 |           1.5 |          0.1 | setosa    |
+|           7.9 |          3.8 |           6.4 |          2   | virginica |
+|           6.4 |          2.8 |           5.6 |          2.2 | virginica |
+|           4.9 |          3   |           1.4 |          0.2 | setosa    |
+
+Let's see how widths compare.
+
+#+begin_src python :results output :exports both
+base = altair.Chart(iris).mark_point().encode(
+    y="petalLength",
+    color="species"
+).properties(
+    width=PLOT.width/2
+)
+
+sepal = base.encode(
+    x="sepalWidth",
+    tooltip=["sepalWidth", "petalLength", "species"]
+).properties(
+    title="Petal Length Vs Sepal Width",
+)
+
+petal = base.encode(
+    x="petalWidth",
+    tooltip=["petalWidth", "petalLength", "species"]    
+).properties(
+    title="Petal Length Vs Petal Width"
+)
+
+chart = (sepal | petal)
+
+save_chart(chart, "petal-length-widths", output_path=OUTPUT_PATH, height=400)
+#+end_src
+
+#+RESULTS:
+#+begin_export html
+<object type="text/html" data="petal-length-widths.html" style="width:100%" height=400>
+  <p>Figure Missing</p>
+</object>
+#+end_export
+
+The pipe operator (~|~) is an alias for the ~hconcat~ function.
+
+
+**Note:** I tried to set a single title but you can't seem to disassociate the ~properties~ from the ~mark_point~ function - I'll have to figure that out.
+
+** Vertical
+   There's a corresponding ~vconcat~ function and ~&~ operator if you want to stack the plots vertically instead of side-by-side.
+
+#+begin_src python :results output :exports both
+base = altair.Chart(iris).mark_point().encode(
+    y="petalLength",
+    color="species"
+).properties(
+    width=PLOT.width
+)
+
+sepal = base.encode(
+    x="sepalWidth",
+    tooltip=["sepalWidth", "petalLength", "species"]
+).properties(
+    title="Petal Length Vs Sepal Width",
+)
+
+petal = base.encode(
+    x="petalWidth",
+    tooltip=["petalWidth", "petalLength", "species"]    
+).properties(
+    title="Petal Length Vs Petal Width"
+)
+
+chart = (sepal & petal)
+
+save_chart(chart, "petal-length-widths-vertical", output_path=OUTPUT_PATH, height=800)
+#+end_src
+
+#+RESULTS:
+#+begin_export html
+<object type="text/html" data="petal-length-widths-vertical.html" style="width:100%" height=800>
+  <p>Figure Missing</p>
+</object>
+#+end_export
+
+* Repeating
+  
+  To make a complete set of comparisons altair provides a ~repeat~ function that lets you create a list of column names and pass them in as a bunch.
+
+
+The last column is the species so we'll grab all the ones before it. Note that the default columns object is an Index, so you have to cast it to a list or an array.
+
+#+begin_src python :results none
+columns = list(iris.columns[:-1])
+#+end_src
+
+#+begin_src python :results output :exports both
+chart = altair.Chart(iris).mark_point().encode(
+    altair.X(altair.repeat("column"), type="quantitative"),
+    altair.Y(altair.repeat("row"), type="quantitative"),
+    color="species",
+    tooltip=list(iris.columns)
+).properties(
+    width=175,
+    height=175
+).repeat(
+    row=columns,
+    column=list(reversed(columns))
+).interactive()
+
+save_chart(chart, "repeat-iris", output_path=OUTPUT_PATH, height=1000)
+#+end_src
+
+#+RESULTS:
+#+begin_export html
+<object type="text/html" data="repeat-iris.html" style="width:100%" height=1000>
+  <p>Figure Missing</p>
+</object>
+#+end_export
+
+
+
+
+
