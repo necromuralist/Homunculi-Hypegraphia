@@ -17,3 +17,4 @@ This is a master post for posts I'm making to follow [[https://altair-viz.github
  - {{% lancelot "The Cars Dataset" %}}altair-tutorial-cars{{% /lancelot %}}
  - {{% lancelot "Binning and Aggregation" %}}altair-tutorial-binning-and-aggregation{{% /lancelot %}}
  - {{% lancelot "Compound Charts" %}}altair-tutorial-compound-charts{{% /lancelot %}}
+ - {{% lancelot "Interactivity" %}}altair-tutorial-interactivity{{% /lancelot %}}

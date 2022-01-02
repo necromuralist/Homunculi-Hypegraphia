@@ -1,0 +1,275 @@
+#+BEGIN_COMMENT
+.. title: Altair Tutorial: Interactivity
+.. slug: altair-tutorial-interactivity
+.. date: 2022-01-01 23:27:05 UTC
+.. tags: altair,tutorial,visualization
+.. category: Altair
+.. link: 
+.. description: A look at the Altair Tutorial on Interactivity.
+.. type: text
+
+#+END_COMMENT
+#+OPTIONS: ^:{}
+#+TOC: headlines 3
+#+PROPERTY: header-args :session ~/.local/share/jupyter/runtime/kernel-2700e362-37e3-4dd1-89da-60da94c1e807-ssh.json
+#+BEGIN_SRC python :results none :exports none
+%load_ext autoreload
+%autoreload 2
+#+END_SRC
+
+* Beginning
+
+  This is a look at the [[https://altair-viz.github.io/altair-tutorial/notebooks/06-Selections.html][Altair Interactivity and Selections]] demonstration (part of the {{% doc %}}the-altair-tutorial{{% /doc %}}).
+
+** Imports
+#+begin_src python :results none
+# python
+from collections import namedtuple
+from functools import partial
+
+# pypi
+from vega_datasets import data
+
+import altair
+
+# this project
+from ignotum.altair_helpers import output_path, print_org_table, save_chart
+#+end_src
+** Set Up
+*** The Data
+#+begin_src python :results output :exports both
+cars = data.cars()
+cars["Gallons Per Mile"] = 1/cars.Miles_per_Gallon
+
+print_org_table(cars.sample(5))
+#+end_src
+
+#+RESULTS:
+| Name                      |   Miles_per_Gallon |   Cylinders |   Displacement |   Horsepower |   Weight_in_lbs |   Acceleration | Year                | Origin   |   Gallons Per Mile |
+|---------------------------+--------------------+-------------+----------------+--------------+-----------------+----------------+---------------------+----------+--------------------|
+| ford ltd landau           |               17.6 |           8 |            302 |          129 |            3725 |           13.4 | 1979-01-01 00:00:00 | USA      |          0.0568182 |
+| chevrolet caprice classic |               17   |           8 |            305 |          130 |            3840 |           15.4 | 1979-01-01 00:00:00 | USA      |          0.0588235 |
+| saab 900s                 |              nan   |           4 |            121 |          110 |            2800 |           15.4 | 1982-01-01 00:00:00 | Europe   |        nan         |
+| chevrolet cavalier wagon  |               27   |           4 |            112 |           88 |            2640 |           18.6 | 1982-01-01 00:00:00 | USA      |          0.037037  |
+| buick electra 225 custom  |               12   |           8 |            455 |          225 |            4951 |           11   | 1973-01-01 00:00:00 | USA      |          0.0833333 |
+
+*** The Plotting
+#+begin_src python :results none
+SLUG = "altair-tutorial-interactivity"
+OUTPUT_PATH = output_path(SLUG)
+save_it = partial(save_chart, output_path=OUTPUT_PATH)
+
+PLOT = namedtuple("Plot", ["width", "height"], defaults=[800, 500])()
+#+end_src
+* Panning, Zooming, and Tooltips
+
+  This is the basic form of interactivity. Tooltips are specified as part of the encoding and panning and zooming is added using the ~interactive~ method call. Since Gallons Per Mile is a fraction I'll add formatting to the tooltip. The formatting uses the [[https://github.com/d3/d3-format][d3-format]], which is apparently based on python's formatting.
+
+#+begin_src python :results output :exports both
+chart = altair.Chart(cars).mark_point().encode(
+    x="Year",
+    y="median(Gallons Per Mile)",
+    color="Origin",
+    tooltip=["Origin", altair.Tooltip("median(Gallons Per Mile)", format=".2f"), "Year"]
+).properties(
+    title="Median Gallons Per Mile Over Time",
+    width=PLOT.width
+).interactive()
+
+save_it(chart, "basic_interactive", height=400)
+#+end_src
+
+#+RESULTS:
+#+begin_export html
+<object type="text/html" data="basic_interactive.html" style="width:100%" height=400>
+  <p>Figure Missing</p>
+</object>
+#+end_export
+
+
+The ~interactive~ call makes it so you can click and drag the plot to move it around and it also allows you to zoom in and zoom out using the mouse's scroll wheel.
+
+* Selections
+** Intervals
+
+  The other type of interactivity that altair gives is the ability to select data to change something about the chart. There are a few different types of selections you can use, in this case we'll use a [[https://altair-viz.github.io/user_guide/generated/api/altair.selection_interval.html#altair.selection_interval][selection interval]] - clicking and dragging defines the corners of a rectangle that selects the data that falls within it. If you don't pass any arguments it will assume that all the points are selected until you draw a box, but we can invert that by passing in ~empty="none"~.
+
+#+begin_src python :results none
+interval_selected = altair.selection_interval(empty="none")
+#+end_src
+
+This ~selected~ object will allow us to create the selection box, but in order for the chart to actually do anything in reaction to the box we need to set up an altair [[https://altair-viz.github.io/user_guide/generated/api/altair.condition.html#altair.condition][~condition~]].
+
+#+begin_src python :results none
+selected_interval_color = altair.condition(interval_selected,
+                                           if_true="Origin",
+                                           if_false=altair.value("lightgray"))
+#+end_src
+
+This ~condiiton~ will color a point by the ~Origin~ if it has been selected or color it light gray if it hasn't. The ~altair.value~ call tells altair that ~lightgray~ is an argument value, not a column name.
+
+Finally we add the ~selected_color~ as an encoding and the ~selected~ object as an argument to ~add_selection~.
+
+#+begin_src python :results output :exports both
+chart = altair.Chart(cars).mark_point().encode(
+ x=altair.X("Weight_in_lbs", axis=altair.Axis(labelAngle=45)),
+ y="Gallons Per Mile",
+ color=selected_interval_color,
+ tooltip=["Name", "Weight_in_lbs",
+          "Origin",
+          "Year",
+          altair.Tooltip("Gallons Per Mile", format=".2f")]
+).add_selection(interval_selected).properties(
+    title="Weight vs Efficiency",
+    width=PLOT.width
+)
+
+save_it(chart, "selected-color", height=410)
+#+end_src
+
+#+RESULTS:
+#+begin_export html
+<object type="text/html" data="selected-color.html" style="width:100%" height=410>
+  <p>Figure Missing</p>
+</object>
+#+end_export
+
+
+The points should all be gray until you make a selection which will add color to the selected points. Note too that once you make the selection rectangle you can drag it around rather than needing to keep re-drawing it if you just want a moving window.
+
+**Note:** Points within the selection seem to pick up the color at the expense of the tooltip.
+
+** Single Points
+
+   Instead of selecting everything within a rectangle, altair also lets you select individual points. The default behavior is to wait until you click on a point, but a more useful way to use it is to make changes based on moving the cursor near (or over) a point.
+
+#+begin_src python :results none
+point_selected = altair.selection_single(on="mouseover",
+                                         nearest=True,
+                                         empty="none")
+
+selected_color = altair.condition(point_selected,
+                                  if_true="Origin",
+                                  if_false=altair.value("lightgray"))
+#+end_src
+
+#+begin_src python :results output :exports both
+chart = altair.Chart(cars).mark_point(size=100).encode(
+    x="Horsepower",
+    y="Gallons Per Mile",
+    color=selected_color,
+    tooltip=["Origin", "Horsepower",
+             altair.Tooltip("Gallons Per Mile", format=".2f")]
+).add_selection(
+    point_selected
+).properties(
+    title="Horsepower vs Gallons Per Mile",
+    width=PLOT.width
+)
+
+save_it(chart, "nearest-point", height=400)
+#+end_src
+
+#+RESULTS:
+#+begin_export html
+<object type="text/html" data="nearest-point.html" style="width:100%" height=400>
+  <p>Figure Missing</p>
+</object>
+#+end_export
+
+There's also a ~selection_multi~ function that is supposed to let you click-shift multiple points, but it didn't work when I tried it (it only selected one point at a time) so I'm going to skip it until I figure out how to make it work.
+
+* Binding Intervals
+
+  Selecting colors is kind of interesting, but maybe not really useful. One thing that you can do with selections is bind two plots together so that selections made on one plot alter the other plot.
+
+First, let's make a selector that only selects along the x-axis (so moving your mouse up and down won't affect it, only moving left and right).
+
+#+begin_src python :results none
+horsepower_selector = altair.selection_interval(encodings=["x"])
+#+end_src
+
+We'll make a base layer that the main chart and selector chart will use.
+
+
+#+begin_src python :results none
+base = altair.Chart(cars).mark_point().encode(
+    x="Horsepower",
+    y="Gallons Per Mile",
+    color="Origin",
+)
+#+end_src
+
+Now we'll make the main chart. We'll map the domain of the X-axis using the interval selection.
+
+#+begin_src python :results none
+main = base.encode(
+    x = altair.X("Horsepower",
+                 scale=altair.Scale(domain=horsepower_selector.ref())),
+    tooltip=["Origin", "Name", "Horsepower",
+             altair.Tooltip("Gallons Per Mile", format=".2f")]
+).properties(
+    width=PLOT.width,
+    height=300,
+)
+#+end_src
+
+Now we'll make the selector chart.
+
+#+begin_src python :results output :exports both
+view = base.add_selection(
+    horsepower_selector
+).properties(
+    width=PLOT.width,
+    height=50
+)
+
+chart = (main & view).properties(
+    title="Gallons Per Mile by Horsepower"
+)
+
+save_it(chart, "horsepower-selector")
+#+end_src
+
+#+RESULTS:
+#+begin_export html
+<object type="text/html" data="horsepower-selector.html" style="width:100%" height=600>
+  <p>Figure Missing</p>
+</object>
+#+end_export
+
+** Filter Selection
+
+#+begin_src python :results output :exports both
+interval = altair.selection_interval()
+
+scatter = altair.Chart(cars).mark_point().encode(
+    x="Horsepower:Q",
+    y="Gallons Per Mile:Q",
+    color=altair.condition(interval, "Origin:N", altair.value("lightgray"))
+).add_selection(
+    interval
+)
+
+histogram = altair.Chart(cars).mark_bar().encode(
+    x="count()",
+    y="Origin",
+    color="Origin"
+).transform_filter(
+    interval
+)
+
+chart = (scatter & histogram).properties(
+    title="Horsepower Vs Efficiency with Counts"
+)
+
+save_it(chart, "efficience-selection-counts")
+#+end_src
+
+#+RESULTS:
+#+begin_export html
+<object type="text/html" data="efficience-selection-counts.html" style="width:100%" height=600>
+  <p>Figure Missing</p>
+</object>
+#+end_export
+

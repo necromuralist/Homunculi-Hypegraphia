@@ -3,7 +3,7 @@
 .. slug: altair-tutorial-binning-and-aggregation
 .. date: 2021-12-30 15:29:49 UTC-08:00
 .. tags: altair,tutorial,visualization
-.. category: Visualization
+.. category: Altair
 .. link: 
 .. description: A look at the altair binning and aggregation demonstration.
 .. type: text
