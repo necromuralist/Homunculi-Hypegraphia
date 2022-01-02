@@ -222,8 +222,8 @@ view = base.add_selection(
 ).properties(
     width=PLOT.width,
     height=50
-)
 
+)
 chart = (main & view).properties(
     title="Gallons Per Mile by Horsepower"
 )
@@ -246,9 +246,13 @@ interval = altair.selection_interval()
 scatter = altair.Chart(cars).mark_point().encode(
     x="Horsepower:Q",
     y="Gallons Per Mile:Q",
-    color=altair.condition(interval, "Origin:N", altair.value("lightgray"))
+    color=altair.condition(interval, "Origin:N", altair.value("lightgray")),
+    tooltip=["Origin", "Name", "Horsepower",
+             altair.Tooltip("Gallons Per Mile", format=".2f")]
 ).add_selection(
     interval
+).properties(
+    width=PLOT.width
 )
 
 histogram = altair.Chart(cars).mark_bar().encode(
@@ -257,10 +261,12 @@ histogram = altair.Chart(cars).mark_bar().encode(
     color="Origin"
 ).transform_filter(
     interval
+).properties(
+    width=PLOT.width
 )
 
 chart = (scatter & histogram).properties(
-    title="Horsepower Vs Efficiency with Counts"
+    title="Horsepower Vs Efficiency with Counts",
 )
 
 save_it(chart, "efficience-selection-counts")
@@ -272,4 +278,5 @@ save_it(chart, "efficience-selection-counts")
   <p>Figure Missing</p>
 </object>
 #+end_export
+
 
