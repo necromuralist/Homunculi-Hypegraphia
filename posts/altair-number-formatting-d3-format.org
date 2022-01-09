@@ -1,0 +1,26 @@
+#+BEGIN_COMMENT
+.. title: Altair Data Formatting (d3-format)
+.. slug: altair-number-formatting-d3-format
+.. date: 2022-01-09 02:03:07 UTC
+.. tags: altair,format,visualization
+.. category: Altair
+.. link: 
+.. description: How altair format's encodings.
+.. type: text
+
+#+END_COMMENT
+
+Altair's [[https://altair-viz.github.io/user_guide/encoding.html][encodings's]] take a ~format~ argument in order to format the displayed values for the data. These follow the [[https://github.com/d3/d3-format][d3-format]] which is apparently based on [[https://docs.python.org/3/library/string.html#format-specification-mini-language][python's formatting]]...
+
+
+* Example Uses
+** Add a Comma to a Tooltip Number
+   For large numbers it can be useful to add a comma separator to every thousand increase (e.g. 1000000 becomes 1,000,000). Let's assume that you are encoding a tooltip named "Elements" and want to format it with a comma. You wold add it using the [[https://altair-viz.github.io/user_guide/generated/channels/altair.Tooltip.html?highlight=tooltip][altair.Tooltip]] class and it would look something like this.
+
+#+begin_src python
+chart.encode(
+    x="Elements",
+    y="Comparisons",
+    tooltip=[altair.Tooltip("Elements", format=","), "Comparisons"]
+)
+#+end_src
