@@ -1,0 +1,13 @@
+#+BEGIN_COMMENT
+.. title: Reference: Altair Documentation
+.. slug: reference-altair-documentation
+.. date: 2022-01-09 00:33:42 UTC
+.. tags: altair,reference,website
+.. category: Reference
+.. link: 
+.. description: A reference to the altair website.
+.. type: text
+
+#+END_COMMENT
+
+1. Altair: Declarative Visualization in Python — Altair 4.2.0 documentation [Internet]. [cited 2022 Jan 8]. Available from: https://altair-viz.github.io/
