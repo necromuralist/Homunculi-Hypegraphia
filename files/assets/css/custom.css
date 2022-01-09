@@ -1,7 +1,3 @@
-img {
-  margin-bottom: 1em;
-}
-
 @font-face {
     font-family: 'goudybookletter';
     src: url('../fonts/GoudyBookletter1911/GoudyBookletter1911.woff') format('woff'),
@@ -36,7 +32,7 @@ a:focus {
 }
 body {
   font-family: "goudybookletter", "EB Garamond",  Georgia, "Times New Roman", Times, serif;
-  font-size: x-large;
+  font-size: large;
   line-height: 1.42857143;
   color: #444444;
   background-color: #ffffff;
@@ -72,11 +68,10 @@ h6,
 }
 
 .navbar {
-    padding: 0;
     background-image: none;
-    font-size: 18px;
-    font-family: "chunkfiveroman", "Cinzel", 'cinzel_decorativebold', "Arial Narrow Bold", sans-serif;
-    font-weight: 700;
+  font-size: 18px;
+  font-family: "chunkfiveroman", "Cinzel", 'cinzel_decorativebold', "Arial Narrow Bold", sans-serif;
+  font-weight: 700;
 }
 
 .navbar-default .badge {
@@ -169,8 +164,16 @@ img {
     margin-right: auto;
 }
 
-/* getting the text in the header to not wrap */
-#search {
-    width: 35%;
+/* The header bar */
+.form-group {
+    margin-bottom: auto;
 }
 
+ .container {
+    max-width: 1224px;
+}
+
+ /* The Creative Commons license */
+ #license-image {
+     float: right;
+ }
